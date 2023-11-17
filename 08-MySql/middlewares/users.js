@@ -1,16 +1,25 @@
-import {body} from 'express-validator'
+const error422 = (massage) => {
+  let data = {
+    status: 422,
+    massage: massage,
+  };
+  return data;
+};
 
-export const loginValidator = [
-  body('email', 'Invalid does not Empty').not().isEmpty(),
-  body('email', 'Invalid email').isEmail(),
-  body('password', 'The minimum password length is 6 characters').isLength({min: 6}),
-]
+const Validating = (req, res) => {
+  let name = req.body.name;
+  let email = req.body.email;
+  let password = req.body.password;
+  let phone = req.body.phone;
+  let authorization = req.body.authorization;
+  let image = req.body.image || req.file;
+  let cloudinary_id = null;
+ 
+  if (name === "") {
+    res.json(error422("Enter your name"));
+  } 
 
-export const createValidator = [
-  body('user.username', 'username does not Empty').not().isEmpty(),
-  body('user.email', 'Invalid email').isEmail(),
-  body('user.age', 'username must be Alphanumeric').isAlphanumeric(),
-  body('user.birthday', 'Invalid birthday').isISO8601(), // check date is ISOString
-  body('user.password', 'password does not Empty').not().isEmpty(),
-  body('user.password', 'The minimum password length is 6 characters').isLength({min: 6}),
-]
+  res.json(error422("eee"));
+}
+
+module.exports = { Validating }

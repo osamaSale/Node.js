@@ -2,7 +2,8 @@ const connection = require("../../07-Store Moblia/connection/mysql");
 const cloudinary = require("../../07-Store Moblia/connection/cloudinary");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const { check, validationResultb } = require('express-validator');
+const validator = require('validator');
 // ============================  Error  =================================== //
 
 const error422 = (massage) => {
@@ -72,7 +73,13 @@ const register = async (req, res) => {
   let authorization = req.body.authorization;
   let image = req.body.image || req.file;
   let cloudinary_id = null;
-  if (name === "") {
+  if (!String(name).trim()) {
+    res.json(error422("Enter your name"));
+  } else if (!(/^[\-0-9a-zA-Z\.\+_]+@[\-0-9a-zA-Z\.\+_]+\.[a-zA-Z]{2,}$/).test(String(email))) {
+    res.json(error422("Enter your Email"));
+  }
+  // res.status(422).json({errors: errors.array()})
+  /* if (name === "") {
     res.json(error422("Enter your name"));
   } else if (email === "") {
     res.json(error422("Enter your Email"));
@@ -126,7 +133,7 @@ const register = async (req, res) => {
         });
       }
     });
-  }
+  } */
 };
 
 // =========================  Edit User =================================== //
