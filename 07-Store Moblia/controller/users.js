@@ -173,15 +173,7 @@ const editUser = (req, res) => {
               status: 200,
             });
           } else {
-            let data = {
-              id: id,
-              name: name,
-              email: email,
-              image: image,
-              phone: phone,
-              authorization: authorization,
-              cloudinary_id: cloudinary_id,
-            };
+        
             if (result) {
               res.json({
                 massage: "successfully Edit",
