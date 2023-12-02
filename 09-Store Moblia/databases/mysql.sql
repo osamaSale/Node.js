@@ -33,6 +33,7 @@ CREATE TABLE products (
     device varchar(255) NOT NULL,
     color varchar(255) NOT NULL,
     price int NOT NULL,
+    priceDiscount int NOT NULL,
     description varchar(500) NOT NULL,
     stock varchar(255) NOT NULL,
     cloudinary_id VARCHAR(255)
@@ -41,8 +42,8 @@ CREATE TABLE products (
 CREATE TABLE contact (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
-    email VARCHAR(30) NOT NULL unique,
-    massage VARCHAR(30) NOT NULL
+    email VARCHAR(30) NOT NULL,
+    message VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE news (
@@ -50,27 +51,36 @@ CREATE TABLE news (
     email VARCHAR(30) NOT NULL unique
 );
 
+CREATE TABLE wishlist (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId int NOT NULL,
+    productid int NOT NULL,
+    name VARCHAR(30) NOT NULL,
+    image varchar(255) NOT NULL,
+    brand varchar(255) NOT NULL,
+    device varchar(255) NOT NULL,
+    color varchar(255) NOT NULL,
+    price int NOT NULL,
+    priceDiscount int NOT NULL,
+    description varchar(500) NOT NULL,
+    stock varchar(255) NOT NULL
+);
+
 CREATE TABLE carts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId int NOT NULL,
     productid int NOT NULL,
-    price int NOT NULL,
-    editPrice int NOT NULL,
+    name VARCHAR(30) NOT NULL,
+    image varchar(255) NOT NULL,
+    brand varchar(255) NOT NULL,
     device varchar(255) NOT NULL,
     color varchar(255) NOT NULL,
-    name varchar(255) NOT NULL,
-    image varchar(255) NOT NULL,
-    quantity int NOT NULL
-);
-
-CREATE TABLE save (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    userId int NOT NULL,
-    productid int NOT NULL,
     price int NOT NULL,
-    device varchar(255) NOT NULL,
-    name VARCHAR(30) NOT NULL,
-    image varchar(255) NOT NULL
+    priceDiscount int NOT NULL,
+    description varchar(500) NOT NULL,
+    stock varchar(255) NOT NULL,
+    total int NOT NULL,
+    quantity int NOT NULL
 );
 
 CREATE TABLE orders (

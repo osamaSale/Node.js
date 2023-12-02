@@ -161,6 +161,8 @@ const editUser = (req, res) => {
     })
 }
 
+// =========================  Login ========================================= //
+
 const login = (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
