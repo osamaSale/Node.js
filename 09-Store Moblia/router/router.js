@@ -8,6 +8,7 @@ const { getAllContact, createContact, editContact, deleteContact } = require("..
 const { getAllNews, createNews, editNews, deleteNews } = require("../controller/news");
 const { getAllWishlist, createWishlist, editWishlist, deleteWishlist } = require("../controller/wishlist");
 const { getAllCarts, createCart, editCart, deleteCart } = require("../controller/carts");
+const { getAllOrders, createOrder, deleteOrder, editOrder } = require("../controller/orders");
 const router = express.Router();
 /* ============================= Users ========================================= */
 router.get("/users", getAllUsers)
@@ -69,6 +70,13 @@ router.get("/carts", getAllCarts)
 router.post("/carts", createCart)
 router.put("/carts", editCart)
 router.delete("/carts/:id", deleteCart)
+
+/* ============================= Orders ========================================= */
+
+router.get("/orders", getAllOrders)
+router.post("/orders", createOrder)
+router.put("/orders", editOrder)
+router.delete("/orders/:orderid", deleteOrder)
 
 
 module.exports = router;

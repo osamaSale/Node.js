@@ -95,11 +95,12 @@ CREATE TABLE listOrderProduct (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId int NOT NULL,
     productid int NOT NULL,
-    editPrice int NOT NULL,
+    name VARCHAR(30) NOT NULL,
+    image varchar(255) NOT NULL,
+    brand varchar(255) NOT NULL,
     device varchar(255) NOT NULL,
     color varchar(255) NOT NULL,
-    name varchar(255) NOT NULL,
-    image varchar(255) NOT NULL,
+    total int NOT NULL,
     quantity int NOT NULL,
     orderid int
 );
