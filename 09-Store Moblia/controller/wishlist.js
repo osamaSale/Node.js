@@ -105,5 +105,21 @@ const deleteWishlist = (req, res) => {
         }
     })
 }
+// =========================  Search wishlist =================================== //
 
-module.exports = { getAllWishlist, createWishlist, editWishlist, deleteWishlist }
+const searchWishlist = (req, res) => {
+    let name = req.params.name;
+    let sql = 'SELECT * FROM wishlist WHERE name LIKE "%' + name + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.name.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no wishlist name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+
+    });
+};
+module.exports = { getAllWishlist, createWishlist, editWishlist, deleteWishlist, searchWishlist }

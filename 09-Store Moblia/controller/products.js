@@ -177,4 +177,22 @@ const deleteProduct = (req, res) => {
         }
     })
 }
-module.exports = { getAllProducts, createProduct, editProduct, deleteProduct }
+
+// =========================  Search Products =================================== //
+
+const searchProducts = (req, res) => {
+    let name = req.params.name;
+    let sql = 'SELECT * FROM products WHERE name LIKE "%' + name + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.name.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no products name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+
+    });
+};
+module.exports = { getAllProducts, createProduct, editProduct, deleteProduct , searchProducts }

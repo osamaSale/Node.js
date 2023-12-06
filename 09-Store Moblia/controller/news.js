@@ -93,10 +93,27 @@ const deleteNews = (req, res) => {
         }
     })
 }
+// =========================  Search Contact =================================== //
 
+const searchNews = (req, res) => {
+    let email = req.params.email;
+    let sql = 'SELECT * FROM news WHERE email LIKE "%' + email + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.email.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no news name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+
+    });
+};
 module.exports = {
     getAllNews,
     createNews,
     editNews,
-    deleteNews
+    deleteNews,
+    searchNews
 }

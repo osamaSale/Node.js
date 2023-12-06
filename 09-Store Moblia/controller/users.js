@@ -166,50 +166,69 @@ const editUser = (req, res) => {
 const login = (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
-  
+
     // if is empty Email and Password
-  
+
     if (email === "") {
-      res.json(error422("Enter your Email"));
+        res.json(error422("Enter your Email"));
     } else if (password === "") {
-      res.json(error422("Enter your Password"));
+        res.json(error422("Enter your Password"));
     } else {
-  
-  
-      const sql = `select * from users where email ='${email}' `;
-      connection.query(sql, async (err, result) => {
-        if (result.length === 0) {
-          res.json({ massage: "You have entered invalid Email", status: 203 });
-        } else {
-          const findUser = result.find((u) => u.id);
-          if (findUser) {
-            const id = findUser.id;
-            if (await bcrypt.compare(req.body.password, findUser.password)) {
-              const token = jwt.sign({ id }, "jwtSecret", {
-                expiresIn: process.env.TOKEN_EXPIRATION,
-              });
-              res.json({
-                status: 200,
-                massage: "successfully Login",
-                result: findUser,
-                token: token,
-              });
+
+
+        const sql = `select * from users where email ='${email}' `;
+        connection.query(sql, async (err, result) => {
+            if (result.length === 0) {
+                res.json({ massage: "You have entered invalid Email", status: 203 });
             } else {
-              res.json({
-                massage: "You have entered invalid Password",
-                status: 201,
-              });
+                const findUser = result.find((u) => u.id);
+                if (findUser) {
+                    const id = findUser.id;
+                    if (await bcrypt.compare(req.body.password, findUser.password)) {
+                        const token = jwt.sign({ id }, "jwtSecret", {
+                            expiresIn: process.env.TOKEN_EXPIRATION,
+                        });
+                        res.json({
+                            status: 200,
+                            massage: "successfully Login",
+                            result: findUser,
+                            token: token,
+                        });
+                    } else {
+                        res.json({
+                            massage: "You have entered invalid Password",
+                            status: 201,
+                        });
+                    }
+                }
             }
-          }
-        }
-      });
+        });
     }
-  };
+};
+
+// =========================  Search Users =================================== //
+
+const searchUser = (req, res) => {
+    let name = req.params.name;
+    let sql = 'SELECT * FROM users WHERE name LIKE "%' + name + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.name.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no user name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+
+    });
+};
 module.exports = {
     getAllUsers,
     singleUser,
     createUser,
     deleteUser,
     editUser,
-    login
+    login,
+    searchUser
 }

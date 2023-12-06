@@ -117,5 +117,21 @@ const deleteDevices = (req, res) => {
         }
     })
 }
+// =========================  Search Devices =================================== //
 
-module.exports = {getAllDevices , createDevices , editDevices , deleteDevices}
+const searchDevices = (req, res) => {
+    let name = req.params.name;
+    let sql = 'SELECT * FROM devices WHERE name LIKE "%' + name + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.name.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no devicess name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+
+    });
+};
+module.exports = {getAllDevices , createDevices , editDevices , deleteDevices , searchDevices}

@@ -112,5 +112,21 @@ const deleteCart = (req, res) => {
         }
     })
 }
+// =========================  Search Cart =================================== //
 
-module.exports = { getAllCarts, createCart, editCart, deleteCart }
+const searchCarts = (req, res) => {
+    let name = req.params.name;
+    let sql = 'SELECT * FROM carts WHERE name LIKE "%' + name + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.name.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no carts name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+
+    });
+};
+module.exports = { getAllCarts, createCart, editCart, deleteCart ,searchCarts}

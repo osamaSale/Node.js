@@ -101,9 +101,28 @@ const deleteContact = (req, res) => {
         }
     })
 }
+
+// =========================  Search Contact =================================== //
+
+const searchContact = (req, res) => {
+    let name = req.params.name;
+    let sql = 'SELECT * FROM contact WHERE name LIKE "%' + name + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.name.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no contact name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+
+    });
+};
 module.exports = {
     getAllContact,
     createContact,
     editContact,
-    deleteContact
+    deleteContact,
+    searchContact
 }

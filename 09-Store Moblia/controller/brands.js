@@ -10,7 +10,7 @@ const getAllBrands = (req, res) => {
         } else if (result.length === 0) {
             res.json({ status: 201, massage: "No brands Found" });
         } else {
-            res.json({status: 200, massage: "Successfully", result: result});
+            res.json({ status: 200, massage: "Successfully", result: result });
         }
     });
 }
@@ -83,9 +83,28 @@ const deleteBrands = (req, res) => {
         }
     })
 }
+
+// =========================  Search brands =================================== //
+
+const searchBrands = (req, res) => {
+    let name = req.params.name;
+    let sql = 'SELECT * FROM brands WHERE name LIKE "%' + name + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.name.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no brand name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+
+    });
+};
 module.exports = {
     getAllBrands,
     createBrands,
     editBrands,
-    deleteBrands
+    deleteBrands,
+    searchBrands
 }
