@@ -5,7 +5,7 @@ const connection = require("../connection/mysql");
 
 const getAllOrders = (req, res) => {
     let data = [];
-    let sql = `select * from orders`;
+    let sql = `select * from orders ORDER BY orderid DESC`;
     connection.query(sql, (err, result) => {
         if (err) {
             res.json({ err: err, status: 500, error: "Internal Server Error" });

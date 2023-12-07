@@ -51,6 +51,13 @@ CREATE TABLE news (
     email VARCHAR(30) NOT NULL unique
 );
 
+CREATE TABLE comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId int NOT NULL,
+    productid int NOT NULL,
+    comment varchar(255) NOT NULL
+);
+
 CREATE TABLE wishlist (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId int NOT NULL,

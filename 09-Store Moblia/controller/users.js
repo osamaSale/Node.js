@@ -4,10 +4,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { error } = require("./error")
 
-
 // ============================  Get All Users  =================================== //
 
 const getAllUsers = (req, res) => {
+    let data = []
     let sql = 'select * from users'
     connection.query(sql, (err, result) => {
         if (err) {
@@ -15,26 +15,25 @@ const getAllUsers = (req, res) => {
         } else if (result.length === 0) {
             res.json({ status: 201, massage: "No Users Found" });
         } else {
-            res.json({
-                status: 200, massage: "Successfully", result: result,
-            });
+            data = { users: result }
+            let sql = `select * from wishlist`;
+            connection.query(sql, (err, result) => {
+                data.users?.forEach((user) => {
+                    user.wishlist = result ? result.filter((u) => u.userId === parseInt(user.id)) : []
+                })
+                let sql = `select * from carts`;
+                connection.query(sql, (err, result) => {
+                    data.users?.forEach((user) => {
+                        user.carts = result ? result.filter((u) => u.userId === parseInt(user.id)) : []
+                    })
+                    res.json({ status: 200, massage: "Successfully", result: data.users });
+                })
+            })
+
+
+            /*  res.json({ status: 200, massage: "Successfully", result: result }); */
         }
 
-    })
-}
-// =========================  Single User =================================== //
-
-const singleUser = (req, res) => {
-    let id = req.params.id;
-    let sql = `select * from users where id = ${id}`;
-    connection.query(sql, (err, result) => {
-        if (err) {
-            res.json({ err: err, status: 500, error: "Internal Server Error" });
-        } else if (result.length === 0) {
-            res.json({ status: 202, massage: "No Users Found" });
-        } else {
-            res.json({ status: 200, massage: "Successfully", result: result });
-        }
     })
 }
 
@@ -55,8 +54,6 @@ const createUser = async (req, res) => {
         res.json(error("Enter your Password"));
     } else if (phone === "") {
         res.json(error("Enter your Phone"));
-    } else if (authorization === "") {
-        res.json(error("Enter your Authorization"));
     } else if (!image) {
         res.json(error("Enter your Image"));
     } else {
@@ -70,14 +67,14 @@ const createUser = async (req, res) => {
         }
         password = bcrypt.hashSync(password, Number("salt"));
         let sql = `INSERT INTO users (name, email ,password, image  ,phone ,authorization ,cloudinary_id) 
-        VALUES('${name}', '${email}' ,'${password}','${image}' ,'${phone}' , '${authorization}' , '${cloudinary_id}')`;
+        VALUES('${name}', '${email}' ,'${password}','${image}' ,'${phone}' , '${authorization === "" ? "user" : authorization}' , '${cloudinary_id}')`;
         connection.query(sql, async (err, result) => {
             let data = { name: name, email: email, password: password, image: image, phone: phone, authorization: authorization, cloudinary_id: cloudinary_id };
 
             if (err) {
                 let public_id = data.cloudinary_id === null ? "null" : data.cloudinary_id.replace('Store-Mobile/users/g', '')
                 await cloudinary.uploader.destroy(public_id).then((res) => { imageUrl = res });
-                res.json({ err: err, status: 500, error: "Internal Server Error" });
+                res.json({ err: err, status: 500, error: "Internal Server Error", massage: `You have entered invalid email ${data.email}` });
             } else {
                 res.json({ massage: "successfully Create user", status: 200, result: data })
             }
@@ -170,35 +167,23 @@ const login = (req, res) => {
     // if is empty Email and Password
 
     if (email === "") {
-        res.json(error422("Enter your Email"));
+        res.json(error("Enter your Email"));
     } else if (password === "") {
-        res.json(error422("Enter your Password"));
+        res.json(error("Enter your Password"));
     } else {
-
-
         const sql = `select * from users where email ='${email}' `;
         connection.query(sql, async (err, result) => {
             if (result.length === 0) {
-                res.json({ massage: "You have entered invalid Email", status: 203 });
+                res.json({ massage: "You have entered invalid Email", status: 500 });
             } else {
                 const findUser = result.find((u) => u.id);
                 if (findUser) {
                     const id = findUser.id;
                     if (await bcrypt.compare(req.body.password, findUser.password)) {
-                        const token = jwt.sign({ id }, "jwtSecret", {
-                            expiresIn: process.env.TOKEN_EXPIRATION,
-                        });
-                        res.json({
-                            status: 200,
-                            massage: "successfully Login",
-                            result: findUser,
-                            token: token,
-                        });
+                        const token = jwt.sign({ id }, "jwtSecret", { expiresIn: process.env.TOKEN_EXPIRATION });
+                        res.json({ status: 200, massage: "Successfully", result: findUser, token: token });
                     } else {
-                        res.json({
-                            massage: "You have entered invalid Password",
-                            status: 201,
-                        });
+                        res.json({ massage: "You have entered invalid Password", status: 201 });
                     }
                 }
             }
@@ -223,9 +208,10 @@ const searchUser = (req, res) => {
 
     });
 };
+
+
 module.exports = {
     getAllUsers,
-    singleUser,
     createUser,
     deleteUser,
     editUser,

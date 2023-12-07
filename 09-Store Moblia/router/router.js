@@ -1,6 +1,6 @@
 const express = require("express");
 const { upload } = require("../connection/upload")
-const { getAllUsers, singleUser, createUser, deleteUser, editUser, login, searchUser } = require("../controller/users");
+const { getAllUsers,  createUser, deleteUser, editUser, login, searchUser } = require("../controller/users");
 const { getAllBrands, createBrands, editBrands, deleteBrands, searchBrands } = require("../controller/brands");
 const { getAllDevices, createDevices, editDevices, deleteDevices, searchDevices } = require("../controller/devices");
 const { getAllProducts, createProduct, editProduct, deleteProduct, searchProducts } = require("../controller/products");
@@ -9,10 +9,10 @@ const { getAllNews, createNews, editNews, deleteNews, searchNews } = require("..
 const { getAllWishlist, createWishlist, editWishlist, deleteWishlist, searchWishlist } = require("../controller/wishlist");
 const { getAllCarts, createCart, editCart, deleteCart, searchCarts } = require("../controller/carts");
 const { getAllOrders, createOrder, deleteOrder, editOrder } = require("../controller/orders");
+const { getAllComments, createComments, editComment, deleteComment, searchComments } = require("../controller/comments");
 const router = express.Router();
 /* ============================= Users ========================================= */
 router.get("/users", getAllUsers)
-router.get("/users/single/:id", singleUser)
 router.post("/users", upload.single("image"), createUser)
 router.delete("/users/:id", deleteUser)
 router.put("/users", upload.single("image"), editUser)
@@ -84,6 +84,13 @@ router.get("/orders", getAllOrders)
 router.post("/orders", createOrder)
 router.put("/orders", editOrder)
 router.delete("/orders/:orderid", deleteOrder)
+/* ============================= Comments ========================================= */
+
+router.get("/comments", getAllComments)
+router.post("/comments", createComments)
+router.put("/comments", editComment)
+router.delete("/comments/:id", deleteComment)
+router.get("/comments/search/:comment", searchComments)
 
 
 module.exports = router;
