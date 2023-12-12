@@ -42,7 +42,8 @@ router.get("/products", getAllProducts)
 router.post("/products", upload.single("image"), createProduct)
 router.put("/products", upload.single("image"), editProduct)
 router.delete("/products/:id", deleteProduct)
-router.get("/products/search/:name", searchProducts)
+ router.get("/products/search/:search", searchProducts) 
+
 
 
 /* ============================= Contact ========================================= */

@@ -181,8 +181,8 @@ const deleteProduct = (req, res) => {
 // =========================  Search Products =================================== //
 
 const searchProducts = (req, res) => {
-    let name = req.params.name;
-    let sql = 'SELECT * FROM products WHERE name LIKE "%' + name + '%" ';
+    let search = req.params.search;
+    let sql = 'SELECT * FROM products WHERE name LIKE "%' + search + '%" OR brand LIKE "%' + search + '%" OR device LIKE "%' + search + '%" ';
     connection.query(sql, (err, result) => {
         if (result) {
             const user = result.filter((e) => e.name.toUpperCase() !== -1);
@@ -195,4 +195,5 @@ const searchProducts = (req, res) => {
 
     });
 };
+
 module.exports = { getAllProducts, createProduct, editProduct, deleteProduct , searchProducts }

@@ -55,6 +55,7 @@ CREATE TABLE comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId int NOT NULL,
     productid int NOT NULL,
+     date varchar(255) NOT NULL,
     comment varchar(255) NOT NULL
 );
 

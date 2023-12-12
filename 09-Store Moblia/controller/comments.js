@@ -3,14 +3,31 @@ const { error } = require("./error")
 
 // ==================== Get All comments ==================================== //
 const getAllComments = (req, res) => {
+    let data = [];
     let sql = `select * from comments`;
     connection.query(sql, (err, result) => {
+        const comment = result.find((c) => c)
         if (err) {
             res.json({ err: err, status: 500, error: "Internal Server Error" });
         } else if (result.length === 0) {
             res.json({ status: 201, massage: "No comments Found" });
         } else {
-            res.json({ status: 200, massage: "Successfully", result: result });
+            data = { result: result }
+            let sql = `select * from users where id = ${comment.userId}`;
+            connection.query(sql, (err, result) => {
+                data.result?.forEach((comment) => {
+                    comment.user = result ? result.find((u) => u.id === parseInt(comment.userId)) : []
+                })
+                let sql = `select * from products where id = ${comment.productid}`;
+                connection.query(sql, (err, result) => {
+                    data.result?.forEach((comment) => {
+                        comment.product = result ? result.find((u) => u.id === parseInt(comment.productid)) : []
+                    })
+                    res.json({ status: 200, massage: "Successfully", result: data.result })
+                })
+              
+            })
+
         }
     });
 }
@@ -21,10 +38,11 @@ const createComments = async (req, res) => {
     let userId = req.body.userId;
     let productid = req.body.productid;
     let comment = req.body.comment;
+    let date = new Date().toUTCString().slice(5, 16);
     if (comment === "") {
         res.json(error("Enter your comment"));
     } else {
-        let sql = `INSERT INTO comments (userId , productid , comment) VALUES('${userId}' , '${productid}', '${comment}')`;
+        let sql = `INSERT INTO comments (userId , productid ,date, comment) VALUES('${userId}' , '${productid}','${date}' ,'${comment}')`;
         connection.query(sql, async (err, result) => {
             let data = { userId: userId, productid: productid, comment: comment };
             if (err) {
@@ -42,16 +60,18 @@ const editComment = async (req, res) => {
     let userId = req.body.userId;
     let productid = req.body.productid;
     let comment = req.body.comment;
+    let date = new Date().toUTCString().slice(5, 16)
     if (comment === "") {
         res.json(error("Enter your comment"));
     } else {
         let sql = `update comments set 
         userId = '${userId}',
         productid = '${productid}',
+        date = '${date}',
         comment = '${comment}'
         where id = '${id}'`
         connection.query(sql, async (err, result) => {
-            let data = {id : id , userId: userId, productid: productid, comment: comment };
+            let data = { id: id, userId: userId, productid: productid, comment: comment };
             if (err) {
                 res.json({ err: err, status: 500, error: "Internal Server Error" });
             } else {
