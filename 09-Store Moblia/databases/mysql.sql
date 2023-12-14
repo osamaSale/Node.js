@@ -15,9 +15,7 @@ CREATE TABLE users (
 
 CREATE TABLE devices (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
-    image varchar(255),
-    cloudinary_id VARCHAR(255)
+    name VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE brands (

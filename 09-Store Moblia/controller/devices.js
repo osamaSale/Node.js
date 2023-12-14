@@ -1,5 +1,4 @@
 const connection = require("../connection/mysql");
-const cloudinary = require("../connection/cloudinary");
 const { error } = require("./error")
 
 // ==================== Get All Devices ==================================== //
@@ -22,28 +21,15 @@ const getAllDevices = (req, res) => {
 
 const createDevices = async (req, res) => {
     let name = req.body.name;
-    let image = req.file;
-    let cloudinary_id = null;
     if (name === "") {
         res.json(error("Enter your name"));
-    } else if (!image) {
-        res.json(error("Enter your Image"));
     } else {
-        image = req.file
-        if (image = req.file) {
-            image = await cloudinary.uploader.upload(req.file.path, { folder: "Store-Mobile/devices" });
-            cloudinary_id = image?.public_id;
-            image = image?.secure_url;
-        } else {
-            image = req.body.image
-        }
-        let sql = `INSERT INTO devices (name, image , cloudinary_id) 
-        VALUES('${name}', '${image}' ,'${cloudinary_id}')`;
+
+        let sql = `INSERT INTO devices (name) 
+        VALUES('${name}')`;
         connection.query(sql, async (err, result) => {
-            let data = { name: name, image: image, cloudinary_id: cloudinary_id };
+            let data = { name: name };
             if (err) {
-                let public_id = data.cloudinary_id === null ? "null" : data.cloudinary_id.replace('Store-Mobile/devices/g', '')
-                await cloudinary.uploader.destroy(public_id).then((res) => { imageUrl = res });
                 res.json({ err: err, status: 500, error: "Internal Server Error" });
             } else {
                 res.json({ massage: "Successfully Create Devices", status: 200, result: data })
@@ -57,8 +43,6 @@ const createDevices = async (req, res) => {
 const editDevices = async (req, res) => {
     let id = req.body.id;
     let name = req.body.name;
-    let image = req.file;
-    let cloudinary_id = null;
     let sql = `select * from devices where id='${id}'`;
     connection.query(sql, async (err, result) => {
         const device = result.find((e) => e.id);
@@ -67,21 +51,10 @@ const editDevices = async (req, res) => {
         } else if (device === undefined) {
             res.json({ massage: "no device id", status: 201 });
         } else {
-            if (image) {
-                let public_id = device.cloudinary_id.replace('Store-Mobile/devices/g', '')
-                await cloudinary.uploader.destroy(public_id).then((res) => {
-                    imageUrl = res
-                })
-                image = await cloudinary.uploader.upload(req.file.path, { folder: "Store-Mobile/devices" });
-                cloudinary_id = image?.public_id;
-                image = image?.secure_url;
-            } else {
-                image = device.image;
-                cloudinary_id = device.cloudinary_id;
-            }
-            let sql = `update devices set name = '${name}', image = '${image}', cloudinary_id = '${cloudinary_id}' where id = '${id}'`
+
+            let sql = `update devices set name = '${name}' where id = '${id}'`
             connection.query(sql, async (err, result) => {
-                let data = { id: id, name: name, image: image, cloudinary_id: cloudinary_id };
+                let data = { id: id, name: name};
                 if (err) {
                     res.json({ err: err, status: 500, massage: "Internal Server Error" })
                 } else {
@@ -104,13 +77,11 @@ const deleteDevices = (req, res) => {
         } else if (device === undefined) {
             res.json({ massage: "no device id", status: 201 });
         } else {
-            let public_id = device.cloudinary_id.replace('Store-Mobile/devices/g', '')
-            await cloudinary.uploader.destroy(public_id).then((res) => { res })
             let sql = `delete from devices where id='${id}'`;
             connection.query(sql, (err, result) => {
                 if (err) {
                     res.json({ err: err, status: 500, massage: "Internal Server Error" });
-                }else{
+                } else {
                     res.json({ id: device.id, massage: "Successfully Delete", status: 200 })
                 }
             })
@@ -134,4 +105,4 @@ const searchDevices = (req, res) => {
 
     });
 };
-module.exports = {getAllDevices , createDevices , editDevices , deleteDevices , searchDevices}
+module.exports = { getAllDevices, createDevices, editDevices, deleteDevices, searchDevices }
