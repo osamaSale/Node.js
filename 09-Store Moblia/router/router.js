@@ -1,9 +1,9 @@
 const express = require("express");
 const { upload } = require("../connection/upload")
-const { getAllUsers,  createUser, deleteUser, editUser, login, searchUser } = require("../controller/users");
+const { getAllUsers, createUser, deleteUser, editUser, login, searchUser, updatePassword } = require("../controller/users");
 const { getAllBrands, createBrands, editBrands, deleteBrands, searchBrands } = require("../controller/brands");
 const { getAllDevices, createDevices, editDevices, deleteDevices, searchDevices } = require("../controller/devices");
-const { getAllProducts, createProduct, editProduct, deleteProduct, searchProducts } = require("../controller/products");
+const { getAllProducts, createProduct, editProduct, deleteProduct, searchProducts, singleProduct } = require("../controller/products");
 const { getAllContact, createContact, editContact, deleteContact, searchContact } = require("../controller/contact");
 const { getAllNews, createNews, editNews, deleteNews, searchNews } = require("../controller/news");
 const { getAllWishlist, createWishlist, editWishlist, deleteWishlist, searchWishlist } = require("../controller/wishlist");
@@ -16,6 +16,7 @@ router.get("/users", getAllUsers)
 router.post("/users", upload.single("image"), createUser)
 router.delete("/users/:id", deleteUser)
 router.put("/users", upload.single("image"), editUser)
+router.put("/users/updatePassword", updatePassword)
 router.post("/users/login", login)
 router.get("/users/search/:name", searchUser)
 
@@ -39,10 +40,11 @@ router.get("/devices/search/:name", searchDevices)
 /* ============================= Products ========================================= */
 
 router.get("/products", getAllProducts)
+router.get("/products/single/:id", singleProduct)
 router.post("/products", upload.single("image"), createProduct)
 router.put("/products", upload.single("image"), editProduct)
 router.delete("/products/:id", deleteProduct)
- router.get("/products/search/:search", searchProducts) 
+router.get("/products/search/:search", searchProducts)
 
 
 

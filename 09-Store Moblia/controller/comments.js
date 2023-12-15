@@ -13,19 +13,12 @@ const getAllComments = (req, res) => {
             res.json({ status: 201, massage: "No comments Found" });
         } else {
             data = { result: result }
-            let sql = `select * from users where id = ${comment.userId}`;
+            let sql = `select * from users `;
             connection.query(sql, (err, result) => {
                 data.result?.forEach((comment) => {
                     comment.user = result ? result.find((u) => u.id === parseInt(comment.userId)) : []
                 })
-                let sql = `select * from products where id = ${comment.productid}`;
-                connection.query(sql, (err, result) => {
-                    data.result?.forEach((comment) => {
-                        comment.product = result ? result.find((u) => u.id === parseInt(comment.productid)) : []
-                    })
-                    res.json({ status: 200, massage: "Successfully", result: data.result })
-                })
-              
+                res.json({ status: 200, massage: "Successfully", result: data.result })
             })
 
         }

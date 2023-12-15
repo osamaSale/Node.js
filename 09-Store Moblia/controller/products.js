@@ -20,6 +20,26 @@ const getAllProducts = (req, res) => {
     })
 }
 
+
+// ============================  Get All Products  =================================== //
+
+const singleProduct = (req, res) => {
+    let id = req.params.id
+    let sql = `select * from products where id = '${id}' `
+    connection.query(sql, (err, result) => {
+        if (err) {
+            res.json({ err: err, status: 500, error: "Internal Server Error" });
+        } else if (result.length === 0) {
+            res.json({ status: 201, massage: "No Products Found" });
+        } else {
+            res.json({
+                status: 200, massage: "Successfully", result: result,
+            });
+        }
+
+    })
+}
+
 // =========================  Create Product =================================== //
 const createProduct = async (req, res) => {
     let name = req.body.name;
@@ -196,4 +216,4 @@ const searchProducts = (req, res) => {
     });
 };
 
-module.exports = { getAllProducts, createProduct, editProduct, deleteProduct , searchProducts }
+module.exports = { getAllProducts, createProduct, editProduct, deleteProduct, searchProducts, singleProduct }

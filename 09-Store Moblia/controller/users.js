@@ -27,11 +27,9 @@ const getAllUsers = (req, res) => {
                         user.carts = result ? result.filter((u) => u.userId === parseInt(user.id)) : []
                     })
                     res.json({ status: 200, massage: "Successfully", result: data.users });
+
                 })
             })
-
-
-            /*  res.json({ status: 200, massage: "Successfully", result: result }); */
         }
 
     })
@@ -157,6 +155,39 @@ const editUser = (req, res) => {
         }
     })
 }
+// =========================  update Password ========================================= //
+
+const updatePassword = (req, res) => {
+    let id = req.body.id;
+    let currentPassword = req.body.currentPassword
+    let password = req.body.password
+    let sql = `select * from users where id='${id}'`;
+    connection.query(sql, async (err, result) => {
+        const user = result.find((e) => e.id);
+        if (err) {
+            res.json({ err: err, status: 500, massage: "Internal Server Error" })
+        } else if (user === undefined) {
+            res.json({ massage: "no user id", status: 201 });
+        } else {
+            if (await bcrypt.compare(currentPassword, user.password)) {
+                password = bcrypt.hashSync(password, Number("salt"));
+                let sql = `update users set password = '${password}' where id = '${id}'`;
+                connection.query(sql, (err, result) => {
+                    console.log(err)
+                    
+                    if (err) {
+                        res.json({ err: err, status: 500, massage: "Internal Server Error" })
+                    } else {
+                        res.json({ massage: "successfully Edit", status: 200 });
+                    }
+                })
+            } else {
+                res.json({ massage: "You have entered invalid Password", status: 500 });
+
+            }
+        }
+    })
+}
 
 // =========================  Login ========================================= //
 
@@ -216,5 +247,6 @@ module.exports = {
     deleteUser,
     editUser,
     login,
-    searchUser
+    searchUser,
+    updatePassword
 }
