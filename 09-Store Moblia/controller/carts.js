@@ -24,7 +24,6 @@ const createCart = (req, res) => {
     let userId = req.body.userId;
     let productid = req.body.productid;
     let quantity = req.body.quantity;
-    /* let total = req.body.total; */
     let sql = `select * from products where id = ${productid} `
     connection.query(sql, (err, result) => {
         const cart = result.find((e) => e.id);

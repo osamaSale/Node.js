@@ -1,6 +1,6 @@
 const error = (massage) => {
     let data = {
-        status: 422,
+        status: 400,
         massage: massage,
     };
     return data;
