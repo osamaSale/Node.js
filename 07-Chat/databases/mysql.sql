@@ -36,6 +36,7 @@ CREATE TABLE group (
 CREATE TABLE friends (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId int NOT NULL,
+    friendId int NOT NULL,
     name VARCHAR(30) NOT NULL,
     email VARCHAR(30) NOT NULL,
     image varchar(255),
