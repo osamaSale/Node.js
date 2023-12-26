@@ -22,7 +22,14 @@ const getAllUsers = (req, res) => {
                 data.users?.forEach((user) => {
                     user.friends = result ? result.filter((u) => u.userId === parseInt(user.id)) : []
                 })
-                res.json({ status: 200, massage: "Successfully", result: data.users });
+
+                let sql = `select * from chat`
+                connection.query(sql ,(err, result) => {
+                    data.users?.forEach((user) => {
+                        user.chat = result ? result.filter((u) => u.userId === parseInt(user.id)) : []
+                    })
+                    res.json({ status: 200, massage: "Successfully", result: data.users });
+                })
             })
         }
 

@@ -43,3 +43,23 @@ CREATE TABLE friends (
     phone varchar(255),
     bio varchar(255)
 );
+
+CREATE TABLE chat (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId int NOT NULL,
+    chatId int NOT NULL,
+    name VARCHAR(30) NOT NULL,
+    email VARCHAR(30) NOT NULL,
+    image varchar(255),
+    phone varchar(255),
+    bio varchar(255)
+);
+
+CREATE TABLE message (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    chatId int NOT NULL,
+    senderId VARCHAR(30) NOT NULL,
+    text VARCHAR(30) NOT NULL,
+    image varchar(255),
+    cloudinary_id VARCHAR(255)
+);

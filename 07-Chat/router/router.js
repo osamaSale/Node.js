@@ -2,6 +2,8 @@ const express = require("express");
 const { upload } = require("../connection/upload");
 const { getAllUsers, createUser, editUser, updatePassword, login, searchUser, deleteUser, findUserEmail } = require("../controller/users");
 const { getAllFriends, CreateFriends } = require("../controller/friends");
+const { createChat } = require("../controller/chat");
+const { createMessage, getMessages } = require("../controller/message");
 
 const router = express.Router();
 /* ============================= Users ========================================= */
@@ -18,6 +20,16 @@ router.get("/users/search/:name", searchUser)
 
 router.get("/friends", getAllFriends)
 router.post("/friends", CreateFriends)
+
+
+/* ============================= Chat ========================================= */
+
+router.post('/chat', createChat);
+
+//============================ Router Massage ============================== //
+
+router.post('/massage', createMessage);
+router.get('/massage/:chatId', getMessages);
 
 
 module.exports = router;
