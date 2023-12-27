@@ -1,27 +1,30 @@
 const connection = require("../connection/mysql")
 const cloudinary = require("../connection/cloudinary");
-
+const { error } = require("./error")
 const createMessage = async (req, res) => {
-    const { chatId, senderId, text } = req.body;
+  
+    const chatId =req.body.chatId
+    const senderId =req.body.senderId
+    let text =req.body.text || req.file;
     let cloudinary_id = null;
-    let image = req.body.image || req.file;
-    if (!image) {
-        image = req.body.image
+    if (!text) {
+        res.json(error("Enter your name"));
     } else {
-        image = req.file
-        if (image = req.file) {
-            image = await cloudinary.uploader.upload(req.file.path, { folder: "Chat/message" });
+        text = req.file
+        if (text = req.file) {
+            text = await cloudinary.uploader.upload(req.file.path, { folder: "Chat/message" });
             cloudinary_id = image?.public_id;
-            image = image?.secure_url;
+            text = image?.secure_url;
         } else {
-            image = req.body.image
+            text = req.body.text
         }
-        let sql = `INSERT INTO message (chatId, senderId ,text, image ) 
-        VALUES ('${chatId}', '${senderId}' ,'${text}','${image}' ,'${cloudinary_id}')`
+        let sql = `INSERT INTO message (chatId, senderId ,text  ,cloudinary_id) 
+        VALUES ('${chatId}', '${senderId}' ,'${text}' ,'${cloudinary_id}')`
         connection.query(sql, async (err, result) => {
-            let data = { chatId: chatId, senderId: senderId, text: text, image: image, cloudinary_id: cloudinary_id };
+            let data = { chatId: chatId, senderId: senderId, text: text,  cloudinary_id: cloudinary_id };
 
             if (err) {
+            
                 let public_id = data.cloudinary_id === null ? "null" : data.cloudinary_id.replace('Chat/users/g', '')
                 await cloudinary.uploader.destroy(public_id).then((res) => { imageUrl = res });
                 res.json({ err: err, status: 500, error: "Internal Server Error", massage: `You have entered invalid email ${data.email}` });

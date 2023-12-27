@@ -24,9 +24,11 @@ const getAllUsers = (req, res) => {
                 })
 
                 let sql = `select * from chat`
-                connection.query(sql ,(err, result) => {
+                connection.query(sql, (err, result) => {
                     data.users?.forEach((user) => {
-                        user.chat = result ? result.filter((u) => u.userId === parseInt(user.id)) : []
+                        user.chat = result ? result.filter((u) => u.id !== parseInt(user.id)) : []
+                        user.chat.senderId = user.chat ? user.chat.find((s) => s.senderId) : []
+                        console.log(user.chat.senderId)
                     })
                     res.json({ status: 200, massage: "Successfully", result: data.users });
                 })
@@ -115,10 +117,6 @@ const editUser = (req, res) => {
     let email = req.body.email;
     let phone = req.body.phone;
     let bio = req.body.bio
-    let twitter = req.body.twitter
-    let facebook = req.body.facebook
-    let instagram = req.body.instagram
-    let location = req.body.location
     let image = req.file;
     let cloudinary_id = null;
     let sql = `select * from users where id='${id}'`;
@@ -147,17 +145,39 @@ const editUser = (req, res) => {
               phone = '${phone}',
               image = '${image}',
               bio = '${bio}',
-              twitter = '${twitter}',
-              facebook = '${facebook}',
-              instagram = '${instagram}',
-              location = '${location}',
               cloudinary_id = '${cloudinary_id}'
               where id = '${id}'`;
             connection.query(sql, (err, result) => {
                 if (err) {
                     res.json({ err: err, status: 500, massage: "Internal Server Error" })
                 } else {
-                    res.json({ massage: "successfully Edit", status: 200 });
+                    let sql = `update friends set 
+                    name = '${name}',
+                    email = '${email}',
+                    image = '${image}',
+                    phone = '${phone}',
+                    bio = '${bio}'
+                    where friendId = '${id}'`
+                    connection.query(sql, (err, result) => {
+                        if (err) {
+                            res.json({ err: err, status: 500, massage: "Internal Server Error" })
+                        } else {
+                            let sql = `update chat set 
+                            receiverName = '${name}',
+                            receiverEmail = '${email}',
+                            receiverImage = '${image}',
+                            receiverPhone = '${phone}',
+                            receiverBio = '${bio}'
+                            where receiverId = '${id}'`
+                            connection.query(sql, (err, result) => {
+                                if (err) {
+                                    res.json({ err: err, status: 500, massage: "Internal Server Error" })
+                                } else {
+                                    res.json({ massage: "successfully Edit", status: 200 });
+                                }
+                            })
+                        }
+                    })
                 }
             })
         }

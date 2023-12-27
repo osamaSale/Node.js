@@ -28,7 +28,7 @@ router.post('/chat', createChat);
 
 //============================ Router Massage ============================== //
 
-router.post('/massage', createMessage);
+router.post('/massage',upload.single("text"), createMessage);
 router.get('/massage/:chatId', getMessages);
 
 
