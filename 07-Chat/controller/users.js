@@ -22,22 +22,27 @@ const getAllUsers = (req, res) => {
                 data.users?.forEach((user) => {
                     user.friends = result ? result.filter((u) => u.userId === parseInt(user.id)) : []
                 })
-
+               
                 let sql = `select * from chat`
                 connection.query(sql, (err, result) => {
                     data.users?.forEach((user) => {
                         user.chat = result ? result.filter((u) => u.id !== parseInt(user.id)) : []
-                        user.chat.senderId = user.chat ? user.chat.find((s) => s.senderId) : []
-                        console.log(user.chat.senderId)
                     })
-                    res.json({ status: 200, massage: "Successfully", result: data.users });
+                    data = { users: data.users, chat: result }
+                    let sql = `select * from message`
+
+                    connection.query(sql, (err, result) => {
+                        data.chat && data.chat?.forEach((user) => {
+                            user.message = result ? result.filter((u) => u.chatId === parseInt(user.id)) : []
+                        })
+                        res.json({ status: 200, massage: "Successfully", result: data.users });
+                    })
+
                 })
             })
         }
-
     })
 }
-
 // =========================  Create User =================================== //
 const createUser = async (req, res) => {
     let name = req.body.name;

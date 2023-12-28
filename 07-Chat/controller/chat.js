@@ -28,7 +28,6 @@ const createChat = (req, res) => {
                 } else {
                     res.json({ status: 200, massage: "Successfully" });
                 }
-
             })
         }
     })

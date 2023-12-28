@@ -17,7 +17,6 @@ CREATE TABLE users (
     cloudinary_id VARCHAR(255)
 );
 
-
 CREATE TABLE friends (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId int NOT NULL,
@@ -48,7 +47,12 @@ CREATE TABLE chat (
 CREATE TABLE message (
     id INT AUTO_INCREMENT PRIMARY KEY,
     chatId int NOT NULL,
-    senderId VARCHAR(30) NOT NULL,
-    text VARCHAR(30) NOT NULL,
+    senderId int NOT NULL,
+    receiverId int NOT NULL,
+    senderName VARCHAR(30) NOT NULL,
+    senderImage varchar(255),
+    receiverName VARCHAR(30) NOT NULL,
+    receiverImage varchar(255),
+    text varchar(255),
     cloudinary_id VARCHAR(255)
 );
