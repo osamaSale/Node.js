@@ -48,11 +48,10 @@ CREATE TABLE message (
     id INT AUTO_INCREMENT PRIMARY KEY,
     chatId int NOT NULL,
     senderId int NOT NULL,
-    receiverId int NOT NULL,
     senderName VARCHAR(30) NOT NULL,
     senderImage varchar(255),
-    receiverName VARCHAR(30) NOT NULL,
-    receiverImage varchar(255),
     text varchar(255),
+ image varchar(255),
+  date varchar(255) NOT NULL,
     cloudinary_id VARCHAR(255)
 );

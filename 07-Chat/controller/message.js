@@ -1,37 +1,41 @@
 const connection = require("../connection/mysql")
 const cloudinary = require("../connection/cloudinary");
-const { error } = require("./error")
 const createMessage = async (req, res) => {
 
-    const chatId = req.body.chatId
-    const senderId = req.body.senderId
-    const receiverId = req.body.receiverId
-    let text = req.body.text || req.file;
+    let chatId = req.body.chatId
+    const senderId = req.body.senderId;
+    let text = req.body.text;
+    let date = new Date().toUTCString().slice(5, 16);
+    let image = req.file;
     let cloudinary_id = null;
-    let sql = `select * from users where id in ('${senderId}', '${receiverId}')`
-    connection.query(sql, (err, result) => {
-        let sender = result.find((u) => u.id === parseInt(senderId));
-        let receiver = result.find((u) => u.id === parseInt(receiverId));
-        if (sender === undefined && receiver === undefined) {
-            res.json({ massage: "no user id", status: 201 });
-        } else {
-            if (!text) {
-                res.json(error("Enter your text"));
-            } else {
-                text = req.body.text
-                
-            }
-            let sql = `INSERT INTO message (chatId, senderId , receiverId ,senderName , senderImage , receiverName , receiverImage ,text ,cloudinary_id) 
-            VALUES ('${chatId}', '${senderId}' , '${receiverId}' ,'${sender.name}' ,'${sender.image}' ,  '${receiver.name}' ,'${receiver.image}' ,'${text}' ,'${cloudinary_id}')`
-            connection.query(sql, (err, result) => {
+    let sql = `select * from chat where id='${chatId}'`
+    connection.query(sql, async (err, result) => {
+           const chat = result.find((e) => e.id ); 
+          if (chat === undefined) {
+              res.json({ massage: "no chat", status: 201 });
+          } else {
+              image = req.file
+              if (image = req.file) {
+                  image = await cloudinary.uploader.upload(req.file.path, { folder: "Chat/message" });
+                  cloudinary_id = image?.public_id;
+                  image = image?.secure_url;
+              } else {
+                  image = null
+              }
+              let sql = `INSERT INTO message (chatId, senderId ,senderName , senderImage , text , image ,date ,cloudinary_id) 
+              VALUES ('${chatId}', '${senderId}'  ,'${chat.senderName}' ,'${chat.senderImage}' ,  '${text}' ,'${image}' ,'${date}' ,'${cloudinary_id}')`
+              connection.query(sql, (err, result) => {
+               
                 if (err) {
-                    res.json({ err: err, status: 500, error: "Internal Server Error" });
-                } else {
-                    res.json({ status: 200, massage: "Successfully" });
-                }
-            })
-        }
+                      res.json({ err: err, status: 500, error: "Internal Server Error" });
+                  } else {
+                      res.json({ status: 200, massage: "Successfully" , result:chat });
+                  }
+              })
+  
+          } 
     })
+
 }
 
 const getMessages = async (req, res) => {

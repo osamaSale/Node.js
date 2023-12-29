@@ -44,6 +44,7 @@ const getAllUsers = (req, res) => {
     })
 }
 // =========================  Create User =================================== //
+
 const createUser = async (req, res) => {
     let name = req.body.name;
     let email = req.body.email;
