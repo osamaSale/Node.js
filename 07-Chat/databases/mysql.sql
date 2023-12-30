@@ -51,7 +51,8 @@ CREATE TABLE message (
     senderName VARCHAR(30) NOT NULL,
     senderImage varchar(255),
     text varchar(255),
- image varchar(255),
-  date varchar(255) NOT NULL,
+    image varchar(255),
+    date varchar(255) NOT NULL,
+    time varchar(255) NOT NULL, 
     cloudinary_id VARCHAR(255)
 );

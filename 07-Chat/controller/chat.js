@@ -3,6 +3,17 @@ const connection = require("../connection/mysql")
 
 
 // ============================  Create Chat  =================================== //
+const getAllChat = (req, res) => {
+    let sql = `select * from chat`
+    connection.query(sql, (err, result) => {
+        if (err) {
+            res.json({ err: err, status: 500, error: "Internal Server Error" });
+        } else {
+            res.json({ massage: "successfully", status: 200, result: result })
+        }
+    })
+}
+// ============================  Create Chat  =================================== //
 
 
 const createChat = (req, res) => {
@@ -36,4 +47,4 @@ const createChat = (req, res) => {
 }
 
 
-module.exports = { createChat };
+module.exports = { createChat, getAllChat };
