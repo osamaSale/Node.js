@@ -1,9 +1,10 @@
 const express = require("express");
 const { upload } = require("../connection/upload");
 const { getAllUsers, createUser, editUser, updatePassword, login, searchUser, deleteUser, findUserEmail } = require("../controller/users");
-const { getAllFriends, CreateFriends } = require("../controller/friends");
+const { getAllFriends, CreateFriends, searchFriends } = require("../controller/friends");
 const { createChat, getAllChat } = require("../controller/chat");
 const { createMessage, getMessages } = require("../controller/message");
+const { getAllChatGroup, getAllChatGroupUsers, createChatGroupMessage, getChatGroupMessage, CreateChatGroupUsers, createChatGroup } = require("../controller/chatGroup");
 
 const router = express.Router();
 /* ============================= Users ========================================= */
@@ -20,6 +21,7 @@ router.get("/users/search/:name", searchUser)
 
 router.get("/friends", getAllFriends)
 router.post("/friends", CreateFriends)
+router.get("/friends/search/:name", searchFriends)
 
 
 /* ============================= Chat ========================================= */
@@ -29,8 +31,15 @@ router.post('/chat', createChat);
 
 //============================ Router Massage ============================== //
 
-router.post('/massage',upload.single("image"), createMessage);
+router.post('/massage', upload.single("image"), createMessage);
 router.get('/massage', getMessages);
 
+/* ============================= Chat ========================================= */
 
+router.get('/chatGroup', getAllChatGroup);
+router.post('/chatGroup', upload.single("image"), createChatGroup);
+router.get('/chatGroupUsers', getAllChatGroupUsers);
+router.post('/chatGroupUsers', CreateChatGroupUsers);
+router.get('/chatGroupMessage', getChatGroupMessage);
+router.post('/chatGroupMessage', upload.single("image"), createChatGroupMessage);
 module.exports = router;

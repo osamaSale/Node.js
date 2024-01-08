@@ -16,14 +16,7 @@ const getAllUsers = (req, res) => {
         } else if (result.length === 0) {
             res.json({ status: 201, massage: "No Users Found" });
         } else {
-            data = { users: result }
-            let sql = `select * from friends`;
-            connection.query(sql, (err, result) => {
-                data.users?.forEach((user) => {
-                    user.friends = result ? result.filter((u) => u.userId === parseInt(user.id)) : []
-                })
-                res.json({ status: 200, massage: "Successfully", result: data.users });
-            })
+            res.json({ status: 200, massage: "Successfully", result: result});
         }
     })
 }

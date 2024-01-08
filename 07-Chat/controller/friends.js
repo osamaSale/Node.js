@@ -45,7 +45,26 @@ const CreateFriends = (req, res) => {
     })
 }
 
+
+// =========================  Search Users =================================== //
+
+const searchFriends = (req, res) => {
+    let name = req.params.name;
+    let sql = 'SELECT * FROM friends WHERE name LIKE "%' + name + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.name.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no user name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+
+    });
+};
 module.exports = {
     getAllFriends,
-    CreateFriends
+    CreateFriends,
+    searchFriends
 }

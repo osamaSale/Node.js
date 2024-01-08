@@ -1,47 +1,50 @@
-const express = require("express");
-const cors = require("cors");
+const express = require('express');
 const app = express();
-const http = require("http")
-require("dotenv").config();
+const PORT = 4000;
 
-app.use(express.json());
+//New imports
+const http = require('http').Server(app);
+const cors = require('cors');
+
 app.use(cors());
-app.use("/", (req, res) => {
-    res.send("osama")
-})
-const server = http.createServer(app)
-const PORT = process.env.PORT || 5000;
 
-const io = require("socket.io")(server, {
-    cors: {
-        origin: "https://reactchatsapp.netlify.app",
-    },
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Hello world',
+  });
 });
-let activeUsers = [];
 
-io.on("connection", (socket) => {
+const socketIO = require('socket.io')(http, {
+    cors: {
+        origin: "http://localhost:3000"
+    }
+});
+
+let activeUsers = [];
+//Add this before the app.get() block
+socketIO.on('connection', (socket) => {
     socket.on("new-user-add", (newUserId) => {
-        if (!activeUsers.some((user) => user.userId === newUserId)) {
+        if (!activeUsers.some((user) => user.id === newUserId)) {
             activeUsers.push({ userId: newUserId, socketId: socket.id });
         }
-        io.emit("get-users", activeUsers);
+        socketIO?.emit("get-users", activeUsers);
     });
 
-    socket.on("disconnect", () => {
+     socket.on("disconnect", () => {
         activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
-        io.emit("get-users", activeUsers);
-    });
-
+        socketIO.emit("get-users", activeUsers);
+    }); 
+ 
     socket.on("send-message", (data) => {
         const { receiverId } = data;
         const user = activeUsers.find((user) => user.userId === receiverId);
        if (user) {
-            io.to(user.socketId).emit("recieve-message", data);
+            socketIO.to(user.socketId).emit("recieve-message", data);
         }
-    });
+        
+    }); 
 });
 
-
-server.listen(PORT, () => {
-    console.log(`http://localhost:${PORT}`);
+http.listen(PORT, () => {
+  console.log(`http://localhost:${PORT}`);
 });
