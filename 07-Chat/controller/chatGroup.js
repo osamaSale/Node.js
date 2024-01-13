@@ -2,6 +2,16 @@ const connection = require("../connection/mysql")
 const cloudinary = require("../connection/cloudinary");
 const { error } = require("./error")
 
+function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+}
 
 // ============================  get Chat Group  =================================== //
 const getAllChatGroup = (req, res) => {
@@ -19,6 +29,7 @@ const getAllChatGroup = (req, res) => {
 const createChatGroup = (req, res) => {
     let userId = req.body.userId
     let name = req.body.name
+    let purpose = req.body.purpose
     let image = req.file
     let cloudinary_id = null;
     let sql = `select * from users where id = '${userId}'`
@@ -40,8 +51,8 @@ const createChatGroup = (req, res) => {
                 } else {
                     image = req.body.image
                 }
-                let sql = `INSERT INTO chatGroup (userId,nameAdmin,imageAdmin,name,image,cloudinary_id)
-                VALUES('${userId}','${user.name}','${user.image}','${name}','${image}' ,'${cloudinary_id}')`
+                let sql = `INSERT INTO chatGroup (userId,nameAdmin,imageAdmin,name,image,purpose,cloudinary_id)
+                VALUES('${userId}','${user.name}','${user.image}','${name}','${image}' ,'${purpose}' ,'${cloudinary_id}')`
                 connection.query(sql, async (err, result) => {
                     if (err) {
                         let public_id = data.cloudinary_id === null ? "null" : data.cloudinary_id.replace('Chat/Chat Group/g', '')
@@ -120,7 +131,6 @@ const getChatGroupMessage = (req, res) => {
 
 
 const createChatGroupMessage = (req, res) => {
-    const d = new Date();
     let groupId = req.body.groupId
     let userId = req.body.userId
     let userName = req.body.userName
@@ -129,7 +139,7 @@ const createChatGroupMessage = (req, res) => {
     let text = req.body.text;
     let cloudinary_id = null;
     let date = new Date().toUTCString().slice(5, 16);
-    let time = d.toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true });
+    let time = formatAMPM(new Date)
     let sql = `select * from chatGroup where id='${groupId}'`
     connection.query(sql, async (err, result) => {
         const chatGroup = result.find((e) => e.id === parseInt(groupId));

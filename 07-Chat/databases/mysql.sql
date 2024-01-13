@@ -64,6 +64,7 @@ CREATE TABLE chatGroup (
     imageAdmin VARCHAR(255) NOT NULL,
     name VARCHAR(30) NOT NULL,
     image varchar(255),
+    purpose varchar(255),
     cloudinary_id VARCHAR(255)
 );
 
