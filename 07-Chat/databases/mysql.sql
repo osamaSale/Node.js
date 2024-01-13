@@ -63,8 +63,8 @@ CREATE TABLE chatGroup (
     nameAdmin VARCHAR(30) NOT NULL,
     imageAdmin VARCHAR(255) NOT NULL,
     name VARCHAR(30) NOT NULL,
-    image varchar(255),
-    purpose varchar(255),
+    image VARCHAR(255),
+    description VARCHAR(255) NOT NULL,
     cloudinary_id VARCHAR(255)
 );
 
@@ -76,7 +76,8 @@ CREATE TABLE chatGroupUsers (
     email VARCHAR(30) NOT NULL,
     image varchar(255),
     phone varchar(255),
-    bio varchar(255)
+    bio varchar(255),
+    isAdmin VARCHAR(30)
 );
 
 CREATE TABLE chatGroupMessage (

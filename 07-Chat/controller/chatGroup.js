@@ -29,9 +29,10 @@ const getAllChatGroup = (req, res) => {
 const createChatGroup = (req, res) => {
     let userId = req.body.userId
     let name = req.body.name
-    let purpose = req.body.purpose
+    let description = req.body.description
     let image = req.file
     let cloudinary_id = null;
+    let isAdmin = "Admin"
     let sql = `select * from users where id = '${userId}'`
     connection.query(sql, async (err, result) => {
         let user = result.find((u) => u.id === parseInt(userId));
@@ -40,6 +41,8 @@ const createChatGroup = (req, res) => {
         } else {
             if (name === "") {
                 res.json(error("Enter your name"));
+            } else if (description === "") {
+                res.json(error("Enter your description"));
             } else if (!image) {
                 res.json(error("Enter your Image"));
             } else {
@@ -51,16 +54,17 @@ const createChatGroup = (req, res) => {
                 } else {
                     image = req.body.image
                 }
-                let sql = `INSERT INTO chatGroup (userId,nameAdmin,imageAdmin,name,image,purpose,cloudinary_id)
-                VALUES('${userId}','${user.name}','${user.image}','${name}','${image}' ,'${purpose}' ,'${cloudinary_id}')`
+
+                let sql = `INSERT INTO chatGroup (userId,nameAdmin,imageAdmin,name,image,description,cloudinary_id)
+                VALUES('${userId}','${user.name}','${user.image}','${name}','${image}' ,'${description}','${cloudinary_id}')`
                 connection.query(sql, async (err, result) => {
                     if (err) {
                         let public_id = data.cloudinary_id === null ? "null" : data.cloudinary_id.replace('Chat/Chat Group/g', '')
                         await cloudinary.uploader.destroy(public_id).then((res) => { imageUrl = res });
                         res.json({ err: err, status: 500, error: "Internal Server Error" });
                     } else {
-                        let sql = `INSERT INTO chatGroupUsers (groupId,userId,name,email,image,phone,bio)
-                        VALUES('${result.insertId}','${userId}','${user.name}','${user.email}','${user.image}','${user.phone}' ,'${user.bio}')`
+                        let sql = `INSERT INTO chatGroupUsers (groupId,userId,name,email,image,phone,bio,isAdmin)
+                        VALUES('${result.insertId}','${userId}','${user.name}','${user.email}','${user.image}','${user.phone}' ,'${user.bio}','${isAdmin}')`
                         connection.query(sql, async (err, result) => {
                             if (err) {
                                 res.json({ err: err, status: 500, error: "Internal Server Error" });
@@ -100,8 +104,8 @@ const CreateChatGroupUsers = (req, res) => {
         if (user === undefined) {
             res.json({ massage: "no user id", status: 201 });
         } else {
-            let sql = `INSERT INTO chatGroupUsers (groupId , userId , name , email , image , phone , bio) 
-            VALUES('${groupId}' , '${userId}'  , '${user.name}' , '${user.email}' , '${user.image}' , '${user.phone}' , '${user.bio}')`
+            let sql = `INSERT INTO chatGroupUsers (groupId , userId , name , email , image , phone , bio ) 
+            VALUES('${groupId}' , '${userId}'  , '${user.name}' , '${user.email}' , '${user.image}' , '${user.phone}' , '${user.bio}' )`
             connection.query(sql, (err, result) => {
                 if (err) {
                     res.json({ err: err, status: 500, error: "Internal Server Error" });
@@ -166,6 +170,21 @@ const createChatGroupMessage = (req, res) => {
         }
     })
 }
+// =========================  Search chat Group User =================================== //
+const searchChatUser = (req, res) => {
+    let name = req.params.name;
+    let sql = 'SELECT * FROM chatGroup WHERE name LIKE "%' + name + '%" ';
+    connection.query(sql, (err, result) => {
+        if (result) {
+            const user = result.filter((e) => e.name.toUpperCase() !== -1);
+            if (user.length === 0) {
+                res.json({ massage: "no Group name", status: 202 });
+            } else {
+                res.json({ status: 200, result: user });
+            }
+        }
+    })
+}
 
 module.exports = {
     getAllChatGroup,
@@ -173,5 +192,6 @@ module.exports = {
     getAllChatGroupUsers,
     CreateChatGroupUsers,
     getChatGroupMessage,
-    createChatGroupMessage
+    createChatGroupMessage,
+    searchChatUser
 };
