@@ -170,18 +170,51 @@ const createChatGroupMessage = (req, res) => {
         }
     })
 }
-// =========================  Search chat Group User =================================== //
-const searchChatUser = (req, res) => {
-    let name = req.params.name;
-    let sql = 'SELECT * FROM chatGroup WHERE name LIKE "%' + name + '%" ';
+// =========================  Delete chat Group User =================================== //
+const deleteChatGruopUser = (req, res) => {
+    const id = req.params.id;
+    let sql = `select * from chatGroupUsers where id='${id}'`;
     connection.query(sql, (err, result) => {
-        if (result) {
-            const user = result.filter((e) => e.name.toUpperCase() !== -1);
-            if (user.length === 0) {
-                res.json({ massage: "no Group name", status: 202 });
-            } else {
-                res.json({ status: 200, result: user });
-            }
+        const user = result.find((e) => e.id);
+        if (err) {
+            res.json({ err: err, status: 500, massage: "Internal Server Error" })
+        } else if (user === undefined) {
+            res.json({ massage: "no user id", status: 201 });
+        } else {
+            let sql = `delete from chatGroupUsers where id='${id}'`;
+            connection.query(sql, (err, result) => {
+                if (err) {
+                    res.json({ err: err, status: 500, massage: "Internal Server Error" })
+                } else {
+                    res.json({ id: user.id, massage: "successfully Delete", status: 200 })
+                }
+            })
+        }
+    })
+}
+
+// =========================  Delete chat Group Message =================================== //
+const deleteChatGruopMessage = (req, res) => {
+    const id = req.params.id;
+    let sql = `select * from chatGroupMessage where id='${id}'`;
+    connection.query(sql, async (err, result) => {
+        const user = result.find((e) => e.id);
+        if (err) {
+            res.json({ err: err, status: 500, massage: "Internal Server Error" })
+        } else if (user === undefined) {
+            res.json({ massage: "no user id", status: 201 });
+        } else {
+            let public_id = user.cloudinary_id.replace('Chat/Chat Group Message/g', '')
+            await cloudinary.uploader.destroy(public_id).then((res) => { imageUrl = res });
+
+            let sql = `delete from chatGroupMessage where id='${id}'`;
+            connection.query(sql, (err, result) => {
+                if (err) {
+                    res.json({ err: err, status: 500, massage: "Internal Server Error" })
+                } else {
+                    res.json({  massage: "successfully Delete", status: 200 })
+                }
+            })
         }
     })
 }
@@ -193,5 +226,6 @@ module.exports = {
     CreateChatGroupUsers,
     getChatGroupMessage,
     createChatGroupMessage,
-    searchChatUser
+    deleteChatGruopUser,
+    deleteChatGruopMessage
 };

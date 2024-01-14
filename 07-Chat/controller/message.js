@@ -53,4 +53,31 @@ const getMessages = async (req, res) => {
         }
     })
 };
-module.exports = { createMessage, getMessages }
+
+
+// =========================  Delete chat  Message =================================== //
+const deleteChatMessage = (req, res) => {
+    const id = req.params.id;
+    let sql = `select * from message where id='${id}'`;
+    connection.query(sql, async (err, result) => {
+        const user = result.find((e) => e.id);
+        if (err) {
+            res.json({ err: err, status: 500, massage: "Internal Server Error" })
+        } else if (user === undefined) {
+            res.json({ massage: "no user id", status: 201 });
+        } else {
+            let public_id = user.cloudinary_id.replace('Chat/Chat Group Message/g', '')
+            await cloudinary.uploader.destroy(public_id).then((res) => { imageUrl = res });
+
+            let sql = `delete from message where id='${id}'`;
+            connection.query(sql, (err, result) => {
+                if (err) {
+                    res.json({ err: err, status: 500, massage: "Internal Server Error" })
+                } else {
+                    res.json({  massage: "successfully Delete", status: 200 })
+                }
+            })
+        }
+    })
+}
+module.exports = { createMessage, getMessages  , deleteChatMessage}
