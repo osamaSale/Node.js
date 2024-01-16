@@ -1,7 +1,6 @@
 const express = require("express");
 const { upload } = require("../connection/upload");
 const { getAllUsers, createUser, editUser, updatePassword, login, searchUser, deleteUser, findUserEmail } = require("../controller/users");
-const { getAllFriends, CreateFriends, searchFriends } = require("../controller/friends");
 const { createChat, getAllChat } = require("../controller/chat");
 const { createMessage, getMessages, deleteChatMessage } = require("../controller/message");
 const { getAllChatGroup, getAllChatGroupUsers, createChatGroupMessage, getChatGroupMessage, CreateChatGroupUsers, createChatGroup, deleteChatGruopUser ,deleteChatGruopMessage} = require("../controller/chatGroup");
@@ -17,11 +16,7 @@ router.post("/users/findEmail", findUserEmail)
 router.post("/users/login", login)
 router.get("/users/search/:name", searchUser)
 
-/* ============================= Friends ========================================= */
 
-router.get("/friends", getAllFriends)
-router.post("/friends", CreateFriends)
-router.get("/friends/search/:name", searchFriends)
 
 
 /* ============================= Chat ========================================= */

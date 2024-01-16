@@ -8,7 +8,6 @@ const { error } = require("./error")
 
 
 const getAllUsers = (req, res) => {
-    let data = []
     let sql = 'select * from users ORDER BY name'
     connection.query(sql, (err, result) => {
         if (err) {
@@ -16,7 +15,9 @@ const getAllUsers = (req, res) => {
         } else if (result.length === 0) {
             res.json({ status: 201, massage: "No Users Found" });
         } else {
-            res.json({ status: 200, massage: "Successfully", result: result});
+
+            res.json({ status: 200, massage: "Successfully", result: result });
+
         }
     })
 }

@@ -212,13 +212,38 @@ const deleteChatGruopMessage = (req, res) => {
                 if (err) {
                     res.json({ err: err, status: 500, massage: "Internal Server Error" })
                 } else {
-                    res.json({  massage: "successfully Delete", status: 200 })
+                    res.json({ massage: "successfully Delete", status: 200 })
                 }
             })
         }
     })
 }
 
+// =========================  Leave chat Group User =================================== //
+const leaveChatGroupUser = (req, res) => {
+    const groupId = req.body.groupId;
+    const userId = req.body.userId;
+    let sql = `select * from chatGroupUsers `;
+    connection.query(sql, (err, result) => {
+        const user = result.find((e) => e.groupId == groupId && e.userId == userId);
+
+        if (err) {
+            res.json({ err: err, status: 500, massage: "Internal Server Error" })
+        } else if (user === undefined) {
+            res.json({ massage: "no user id", status: 201 });
+        } else {
+            let sql = `delete from chatGroupUsers  where groupId='${groupId}' and userId = '${user.userId}'`;
+            connection.query(sql, (err, result) => {
+                if (err) {
+                    res.json({ err: err, status: 500, massage: "Internal Server Error" })
+                } else {
+                    res.json({ massage: "successfully Delete", status: 200 })
+                }
+            })
+        }
+    })
+
+}
 module.exports = {
     getAllChatGroup,
     createChatGroup,
@@ -227,5 +252,6 @@ module.exports = {
     getChatGroupMessage,
     createChatGroupMessage,
     deleteChatGruopUser,
-    deleteChatGruopMessage
+    deleteChatGruopMessage,
+    leaveChatGroupUser
 };
