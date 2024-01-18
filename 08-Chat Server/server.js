@@ -17,9 +17,7 @@ app.get('/', (req, res) => {
 });
 const socketIO = require('socket.io')(http, {
   cors: {
-    origin: "http://localhost:3000",
-    allowedHeaders: ["my-custom-header"],
-    credentials: true
+    origin: "https://main--chatsapplication.netlify.app"
   }
 });
 let users = []
