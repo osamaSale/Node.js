@@ -4,12 +4,21 @@ const connection = require("../connection/mysql")
 
 // ============================  Create Chat  =================================== //
 const getAllChat = (req, res) => {
+    let data = []
     let sql = `select * from chat`
     connection.query(sql, (err, result) => {
         if (err) {
             res.json({ err: err, status: 500, error: "Internal Server Error" });
         } else {
-            res.json({ massage: "successfully", status: 200, result: result })
+            
+            data = { chat: result }
+            let sql = `select * from message`
+            connection.query(sql, (err, result) => {
+                data.chat?.forEach((chat) => {
+                    chat.mass = result ? result[result.length -1] : []
+                })
+                res.json({ massage: "successfully", status: 200, result: data.chat })
+            })
         }
     })
 }
