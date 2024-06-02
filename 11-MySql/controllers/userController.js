@@ -37,7 +37,7 @@ module.exports = {
         try {
             const user = { name, email, password, phone, authorization, cloudinary_id, image_url };
             const userId = await userModel.createUser(user);
-            res.status(201).json({ message: 'User created successfully', userId });
+            res.status(201).json({ message: 'User created successfully', userId , users : await userModel.getUsers()});
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Server Error' });
@@ -51,6 +51,10 @@ module.exports = {
         if (req.file) {
             image_url = req.file.path; // Cloudinary URL
             cloudinary_id = req.file.filename; // Cloudinary public_id
+        }else{
+            const oldUser = await userModel.getUserById(id);
+            image_url = oldUser.image;
+            cloudinary_id = oldUser.cloudinary_id;
         }
         if (!name || !email || !password || !phone || !authorization) {
             return res.status(400).json({ message: 'All fields are required' });
@@ -58,7 +62,7 @@ module.exports = {
         try {
             const user = { name, email, password, phone, authorization, cloudinary_id, image_url };
             await userModel.updateUser(id, user);
-            res.json({ message: 'User updated successfully', userId: id });
+            res.json({ message: 'User updated successfully', userId: id , users : await userModel.getUsers()});
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Server Error' });

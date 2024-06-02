@@ -28,7 +28,6 @@ module.exports = {
         if (!oldUser) {
             throw new Error('User not found');
         }
-
         // Delete the old image from Cloudinary if a new image is provided
         if (image_url && oldUser.cloudinary_id) {
             await cloudinary.uploader.destroy(oldUser.cloudinary_id);
