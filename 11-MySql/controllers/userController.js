@@ -81,23 +81,25 @@ module.exports = {
     loginUser: async function (req, res) {
         const { email, password } = req.body;
         if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password are required' });
-        }
-        try {
-            const user = await userModel.findUserByEmail(email);
-            if (!user) {
-                return res.status(400).json({ message: 'Invalid email or password' });
+            return res.json({ message: 'Email and password are required' });
+        }else{
+            try {
+                const user = await userModel.findUserByEmail(email);
+                if (!user) {
+                    return res.status(400).json({ message: 'Invalid email or password' });
+                }
+                const isPasswordValid = await userModel.validatePassword(password, user.password);
+                if (!isPasswordValid) {
+                    return res.status(400).json({ message: 'Invalid email or password' });
+                }
+                const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                res.json({ token ,user});
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Server Error'  });
             }
-            const isPasswordValid = await userModel.validatePassword(password, user.password);
-            if (!isPasswordValid) {
-                return res.status(400).json({ message: 'Invalid email or password' });
-            }
-            const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            res.json({ token ,user});
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Server Error'  });
         }
+       
     },
     searchUsers: async function (req, res) {
         const { name } = req.params;
