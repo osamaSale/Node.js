@@ -8,10 +8,8 @@ const port = 5000;
 
 // Hello world example
 app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
-
-
+  res.send('Hello World!')
+})
 
 // run the server locally on the desired port, use the following link to open up the server http://localhost:3000`
 app.listen(port, () => {

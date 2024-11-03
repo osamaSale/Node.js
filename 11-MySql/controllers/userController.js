@@ -12,6 +12,9 @@ module.exports = {
     },
     getUserById: async function (req, res) {
         const { id } = req.params;
+        if(!id){
+            return res.status(404).json({ message: 'User not found' });
+        }
         try {
             const user = await userModel.getUserById(id);
             if (!user) {
@@ -20,7 +23,7 @@ module.exports = {
             res.json(user);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Server Error' });
+            res.status(500).json({ message: 'Server Error osama' });
         }
     },
     createUser: async function (req, res) {
@@ -84,14 +87,18 @@ module.exports = {
             return res.json({ message: 'Email and password are required' });
         }else{
             try {
-                const user = await userModel.findUserByEmail(email);
+              
+                let user = await userModel.findUserByEmail(email);
+                console.log(email)
+                console.log(user)
                 if (!user) {
-                    return res.status(400).json({ message: 'Invalid email or password' });
-                }
+                    return res.status(400).json({ message: 'Invalid Email' });
+                }else{
                 const isPasswordValid = await userModel.validatePassword(password, user.password);
                 if (!isPasswordValid) {
-                    return res.status(400).json({ message: 'Invalid email or password' });
+                    return res.status(400).json({ message: 'Invalid Password' });
                 }
+            }
                 const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
                 res.json({ token ,user});
             } catch (error) {

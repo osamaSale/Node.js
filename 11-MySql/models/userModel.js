@@ -50,7 +50,8 @@ module.exports = {
         return id;
     },
     findUserByEmail: async function (email) {
-        const [rows] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+        const [rows] = await db.execute(`SELECT * FROM users WHERE email  = '${email}'`);
+        console.log(rows)
         return rows[0];
     },
     validatePassword: async function (inputPassword, storedPassword) {
