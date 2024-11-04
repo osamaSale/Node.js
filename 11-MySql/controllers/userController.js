@@ -27,7 +27,6 @@ module.exports = {
         }
     },
     createUser: async function (req, res) {
-        const { name, email, password, phone, authorization } = req.body;
         let image_url = null;
         let cloudinary_id = null;
         if (req.file) {
